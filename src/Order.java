@@ -92,7 +92,8 @@ public class Order extends Application{
         
         //root and show scene
         GridPane root = new GridPane();
-        root.setPadding(new Insets(10,10,10,10));
+        root.setHgap(10);
+        root.setVgap(10);
         root.add(hbox, 0, 0);
         root.add(vbox, 1, 0);
         root.add(buttons, 1, 1);
