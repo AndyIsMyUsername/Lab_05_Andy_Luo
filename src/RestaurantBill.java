@@ -22,16 +22,15 @@ import javafx.stage.Stage;
  */
 public class RestaurantBill extends Application{
 
+    private double subtotal = 0.0;
+    private final double TaxRate = 0.13;
+    
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        
-//        private double subtotal = 0.0;
-//        private double total = 0.0;
-               
                 
         //add whole food item for user to choose
         ComboBox<String> beverageComboBox = new ComboBox<>();
@@ -61,7 +60,7 @@ public class RestaurantBill extends Application{
         
         //main
         items.put("Steak", 15.00);
-        items.put("Grilled Chiken", 13.50);
+        items.put("Grilled Chikcen", 13.50);
         items.put("Chicken Alfredo", 13.95);
         items.put("Turkey Club", 11.90);
         items.put("Shrimp Scampi", 18.99);
@@ -80,17 +79,47 @@ public class RestaurantBill extends Application{
         Label bevLabel = new Label("Beverages: ");
         Label appetLabel = new Label("Appetizer: ");
         Label mainLabel = new Label("Main Dishes: ");
-        Label dessertLabel = new Label("Deesrts: ");
+        Label dessertLabel = new Label("Desserts: ");
         
         //slider for tip%
         Slider tipSlider = new Slider(0.0,20.0,10.0);
         tipSlider.setShowTickLabels(true);
         tipSlider.setShowTickMarks(true);
         tipSlider.setMajorTickUnit(5);
+        tipSlider.setBlockIncrement(1);
         tipSlider.setOrientation(Orientation.HORIZONTAL);
         
-        Button clearButton = new Button("Clear Button");
+        //calculation Label
+        Label subtotalLabel = new Label("Subtotal : $0.00");
+        Label taxLabel = new Label("Tax : $0.00");
+        Label tipLabel = new Label("Tip : $0.00");
+        Label totalLabel = new Label("Total : $0.00");
+        
+        //add from combo boxes
+        beverageComboBox.setOnAction(e -> addItems(beverageComboBox, items, subtotalLabel, taxLabel, tipLabel, totalLabel, tipSlider));
+        appetizerComboBox.setOnAction(e -> addItems(appetizerComboBox, items, subtotalLabel, taxLabel, tipLabel, totalLabel, tipSlider));
+        mainCourseComboBox.setOnAction(e -> addItems(mainCourseComboBox, items, subtotalLabel, taxLabel, tipLabel, totalLabel, tipSlider));
+        dessertComboBox.setOnAction(e -> addItems(dessertComboBox, items, subtotalLabel, taxLabel, tipLabel, totalLabel, tipSlider));
                 
+        //slider
+        tipSlider.valueProperty().addListener((obs , oldVal, newVal) ->  { 
+            tipLabel.setText("Tip : "  +  newVal.doubleValue());
+            updateBill(subtotalLabel, taxLabel, tipLabel, totalLabel, tipSlider.getValue());
+        });
+        
+        Button clearButton = new Button("Clear EVERYTHING");
+        clearButton.setOnAction(e -> {
+            subtotal = 0.0;
+            beverageComboBox.getSelectionModel().clearSelection();
+            appetizerComboBox.getSelectionModel().clearSelection();
+            mainCourseComboBox.getSelectionModel().clearSelection();
+            dessertComboBox.getSelectionModel().clearSelection();
+            tipSlider.setValue(10);
+            subtotalLabel.setText("Subtotal: $0.00");
+            tipLabel.setText("Tip: $0.00");
+            taxLabel.setText("Tax: $0.00");
+            totalLabel.setText("Total: $0.00");
+        });
         
         GridPane root = new GridPane();
         //add labels
@@ -106,6 +135,12 @@ public class RestaurantBill extends Application{
         
         root.add(tipSlider, 0, 4);
         
+        root.add(subtotalLabel, 2, 0);
+        root.add(taxLabel, 2, 1);
+        root.add(tipLabel, 2, 2);
+        root.add(totalLabel, 2, 3);
+        
+        root.add(clearButton, 2, 4);
         root.setHgap(10);
         root.setVgap(10);
         
@@ -115,5 +150,26 @@ public class RestaurantBill extends Application{
         stage.setScene(scene);
         stage.setTitle("Restaurant bill");
         stage.show();
+    }
+    
+    private void addItems(ComboBox<String> box , Map<String, Double> items, Label subtotalLabel, Label taxLabel, 
+                            Label tipLabel, Label totalLabel, Slider tipSlider) { 
+        
+        String item = box.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            subtotal += items.getOrDefault(item, 0.0);
+            updateBill(subtotalLabel, taxLabel, tipLabel, totalLabel, tipSlider.getValue());
+        }   
+    }
+    
+    private void updateBill ( Label subtotalLabel, Label taxLabel, Label tipLabel, Label totalLabel, double tipPercent) { 
+        double tax = subtotal * TaxRate;
+        double tip = subtotal * (tipPercent/100);
+        double total = subtotal + tip + tax;
+        
+        subtotalLabel.setText("Subtotal : " + subtotal);
+        taxLabel.setText("Tax: " + tax);
+        tipLabel.setText("Tip: " + tip);;
+        totalLabel.setText("Total: " + total);
     }
 }

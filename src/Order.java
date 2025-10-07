@@ -41,7 +41,7 @@ public class Order extends Application{
         Label selectBagStyleLabel = new Label("Select Bag Style : ");
         ListView<String> bagTypesListView = new ListView<>();
         bagTypesListView.setPrefSize(120,100);
-        bagTypesListView.getItems().addAll("Full Decorative", "Beaded", "Pirate Deisgn", "Fringed", "Leather", "Plain");
+        bagTypesListView.getItems().addAll("Full Decorative", "Beaded", "Pirate Design", "Fringed", "Leather", "Plain");
         bagTypesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
        
      
@@ -66,7 +66,7 @@ public class Order extends Application{
         
         //buttons
         Button placeOrderBtn = new Button("Place Order");
-        Button clearSelectionsBtn = new Button("Clear Selecrions");
+        Button clearSelectionsBtn = new Button("Clear Selections");
         HBox buttons = new HBox(10, placeOrderBtn, clearSelectionsBtn);
         
         placeOrderBtn.setOnAction(e -> 
